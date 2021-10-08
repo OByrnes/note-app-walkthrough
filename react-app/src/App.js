@@ -6,8 +6,11 @@ import SignUpForm from './components/auth/SignUpForm';
 import NavBar from './components/NavBar';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import UsersList from './components/UsersList';
+import NotesPage from './components/notepage/notespage';
 import User from './components/User';
 import { authenticate } from './store/session';
+import IndividualNotePage from './components/notepage/individualNotePage';
+import ErrorComponent from './components/errors/errorComponent';
 
 function App() {
   const [loaded, setLoaded] = useState(false);
@@ -27,6 +30,7 @@ function App() {
   return (
     <BrowserRouter>
       <NavBar />
+      <ErrorComponent />
       <Switch>
         <Route path='/login' exact={true}>
           <LoginForm />
@@ -40,9 +44,13 @@ function App() {
         <ProtectedRoute path='/users/:userId' exact={true} >
           <User />
         </ProtectedRoute>
-        <ProtectedRoute path='/' exact={true} >
-          <h1>My Home Page</h1>
+        <ProtectedRoute path='/notes' exact={true} >
+          <NotesPage />
         </ProtectedRoute>
+        <ProtectedRoute path={`/notes/:id`} exact={true} >
+          <IndividualNotePage />
+        </ProtectedRoute>
+        
       </Switch>
     </BrowserRouter>
   );

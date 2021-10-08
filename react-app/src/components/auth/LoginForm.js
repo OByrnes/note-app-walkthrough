@@ -4,20 +4,22 @@ import { Redirect } from 'react-router-dom';
 import { login } from '../../store/session';
 
 const LoginForm = () => {
-  const [errors, setErrors] = useState([]);
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const user = useSelector(state => state.session.user);
   const dispatch = useDispatch();
-
+  
   const onLogin = async (e) => {
     e.preventDefault();
     const data = await dispatch(login(email, password));
-    if (data) {
-      setErrors(data);
-    }
+    
   };
 
+  const demoLogin = async(e) =>{
+    e.preventDefault()
+    await dispatch(login("demo@aa.io", "password"))
+  }
   const updateEmail = (e) => {
     setEmail(e.target.value);
   };
@@ -27,16 +29,12 @@ const LoginForm = () => {
   };
 
   if (user) {
-    return <Redirect to='/' />;
+    return <Redirect to='/notes' />;
   }
 
   return (
-    <form onSubmit={onLogin}>
-      <div>
-        {errors.map((error, ind) => (
-          <div key={ind}>{error}</div>
-        ))}
-      </div>
+    <form onSubmit={onLogin} className="auth-form">
+      
       <div>
         <label htmlFor='email'>Email</label>
         <input
@@ -56,7 +54,10 @@ const LoginForm = () => {
           value={password}
           onChange={updatePassword}
         />
+      </div>
+      <div>
         <button type='submit'>Login</button>
+        <button type="button" onClick={(e)=>demoLogin(e)}>Demo User</button>
       </div>
     </form>
   );

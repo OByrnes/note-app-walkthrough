@@ -1,6 +1,7 @@
 // constants
 const SET_USER = 'session/SET_USER';
 const REMOVE_USER = 'session/REMOVE_USER';
+const SET_ERRORS = 'session/SET_ERRORS'
 
 const setUser = (user) => ({
   type: SET_USER,
@@ -11,7 +12,11 @@ const removeUser = () => ({
   type: REMOVE_USER,
 })
 
-const initialState = { user: null };
+export const SetErrors = (errors) => ({
+  type: SET_ERRORS,
+  payload: errors
+})
+
 
 export const authenticate = () => async (dispatch) => {
   const response = await fetch('/api/auth/', {
@@ -22,10 +27,12 @@ export const authenticate = () => async (dispatch) => {
   if (response.ok) {
     const data = await response.json();
     if (data.errors) {
-      return;
+      dispatch(SetErrors(data.errors))
+    }else{
+      dispatch(setUser(data));
+
     }
   
-    dispatch(setUser(data));
   }
 }
 
@@ -41,18 +48,16 @@ export const login = (email, password) => async (dispatch) => {
     })
   });
   
-  
   if (response.ok) {
     const data = await response.json();
-    dispatch(setUser(data))
-    return null;
-  } else if (response.status < 500) {
-    const data = await response.json();
     if (data.errors) {
-      return data.errors;
+      dispatch(SetErrors(data.errors))
+    }else{
+      dispatch(setUser(data))
+      return "good"
     }
   } else {
-    return ['An error occurred. Please try again.']
+    dispatch(SetErrors(["Something went wrong, please try again"]))
   }
 
 }
@@ -85,24 +90,27 @@ export const signUp = (username, email, password) => async (dispatch) => {
   
   if (response.ok) {
     const data = await response.json();
-    dispatch(setUser(data))
-    return null;
-  } else if (response.status < 500) {
-    const data = await response.json();
-    if (data.errors) {
-      return data.errors;
+    if(data.errors){
+      dispatch(SetErrors(data.errors))
+    }else{
+      dispatch(setUser(data))
+      return "good"
     }
   } else {
-    return ['An error occurred. Please try again.']
+    dispatch(SetErrors(['An error occurred. Please try again.']))
   }
 }
+const initialState = {user:null, errors:null}
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case SET_USER:
-      return { user: action.payload }
+      return { user: action.payload, errors:null }
     case REMOVE_USER:
-      return { user: null }
+      return { user: null, errors:null }
+    case SET_ERRORS:
+      let newState = {...state, errors:action.payload}
+      return newState
     default:
       return state;
   }
