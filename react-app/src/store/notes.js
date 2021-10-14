@@ -1,13 +1,16 @@
 import { SetErrors } from "./session"
 
-const ADD_NOTE= "stories/ADD_NOTE"
-const EDIT_NOTE="stories/EDIT_NOTE"
-export const SET_NOTES = "stories/SET_NOTES"
-const DELETE_NOTE = "stories/DELETE_NOTE"
+const ADD_NOTE= "notes/ADD_NOTE"
+const EDIT_NOTE="notes/EDIT_NOTE"
+export const SET_NOTES = "notes/SET_NOTES"
+const DELETE_NOTE = "notes/DELETE_NOTE"
 
-const SET_CURRENT_NOTE = "stories/SET_CURRENT_NOTE"
-const CLEAR_CURRENT_NOTE = "stories/CLEAR_CURRENT_NOTE"
+const SET_CURRENT_NOTE = "notes/SET_CURRENT_NOTE"
+const CLEAR_CURRENT_NOTE = "notes/CLEAR_CURRENT_NOTE"
 
+const SHARE_NOTE = "notes/SHARE_NOTE"
+const SET_SHARED = "notes/SET_SHARED_NOTES"
+const EDIT_SHARED = "notes/EDIT_SHARED_NOTES"
 
 export const setUserNotes = (notes) =>({
     type: SET_NOTES,
@@ -39,6 +42,22 @@ export const clearCurrent = () => ({
   type: CLEAR_CURRENT_NOTE,
   payload: null
 })
+
+const shareNoteAction = (user) => ({
+  type: SHARE_NOTE,
+  payload: user
+})
+
+export const setSharedNotes = (notes) => ({
+  type: SET_SHARED,
+  payload: notes
+})
+
+export const editSharedNote = (note) => ({
+  type: EDIT_SHARED,
+  payload: note
+})
+
 
 
 export const AddNote = (note) => async dispatch => {
@@ -136,8 +155,133 @@ export const deleteNoteThunk = (id) => async dispatch => {
           dispatch(SetErrors(["Ooops, Something went wrong"]))
       }
 }
+export const shareNote = (username, id) => async dispatch => {
+  const response = await fetch(`/api/share/${id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+       username
+      })
+  })
+  if(response.ok){
+    let resJSON = await response.json()
+    if(resJSON.errors){
+      dispatch(SetErrors(resJSON.errors))
+    }else{
+      dispatch(editNote(resJSON))
+      return "good"
+    }
+  }else{
+    dispatch(SetErrors(["Something went wrong. Please try again"]))
+  }
+}
 
-const initialState = {all:{}, current:{}}
+export const unShareNote = (username, id) => async dispatch => {
+  const response = await fetch(`/api/share/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+       username
+      })
+  })
+  if(response.ok){
+    let resJSON = await response.json()
+    if(resJSON.errors){
+      dispatch(SetErrors(resJSON.errors))
+    }else{
+      dispatch(editNote(resJSON))
+      return "good"
+    }
+  }else{
+    dispatch(SetErrors(["Something went wrong. Please try again"]))
+  }
+}
+
+export const AddComment = (comment, share) => async dispatch => {
+  const response = await fetch('/api/comments/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(comment)
+    })
+    if(response.ok){
+        let resJSON = await response.json()
+        if(resJSON.errors){
+            dispatch(SetErrors(resJSON.errors))
+        }else{
+          if(share){
+            dispatch(editSharedNote(resJSON))
+
+          }else{
+            dispatch(editNote(resJSON))
+          }
+          
+          return "good"
+        }
+    }
+}
+
+export const EditComment = (comment, share) => async dispatch => {
+  const response = await fetch(`/api/comments/${comment.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(comment)
+    })
+    if(response.ok){
+        let resJSON = await response.json()
+        if(resJSON.errors){
+            dispatch(SetErrors(resJSON.errors))
+        }else{
+          if(share){
+            dispatch(editSharedNote(resJSON))
+
+          }else{
+            dispatch(editNote(resJSON))
+          }
+          
+          return "good"
+        }
+    }
+}
+
+export const deleteComment = (comment,note_id, share) => async dispatch => {
+  const response = await fetch(`/api/comments/${comment.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        note_id
+      })
+    })
+    if(response.ok){
+        let resJSON = await response.json()
+        if(resJSON.errors){
+            dispatch(SetErrors(resJSON.errors))
+        }else{
+          if(share){
+            dispatch(editSharedNote(resJSON))
+
+          }else{
+            dispatch(editNote(resJSON))
+          }
+          
+          return "good"
+        }
+    }
+}
+
+
+
+
+const initialState = {all:{}, current:{}, shared: {}}
 export default function reducer(state = initialState, action) {
   let newState;
   switch (action.type) {
@@ -167,6 +311,19 @@ export default function reducer(state = initialState, action) {
         delete newState.all[action.payload]
         newState.current = null
         return newState
+    case SET_SHARED:
+      newState = {...state}
+      newState.shared = action.payload
+      return newState
+    case EDIT_SHARED:
+      newState = {... state}
+      newState.shared[action.payload.id] = action.payload
+      return newState
+    
+    // case SHARE_NOTE:
+    //   newState = {...state}
+    //   newState.current = newState.all[action.payload.id]
+    //   newState.current.shared.push(action.payload.username)
     default:
       return state;
   }

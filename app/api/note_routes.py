@@ -22,7 +22,6 @@ def validation_errors_to_error_messages(validation_errors):
 def add_new_note():
     user_id = current_user.id
     form = NoteForm()
-    print(form.data)
     form['csrf_token'].data = request.cookies['csrf_token']
     if form.validate_on_submit():
         new_note = Note(

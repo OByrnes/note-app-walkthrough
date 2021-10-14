@@ -1,4 +1,5 @@
 from .db import db
+from .sharing import shared_notes
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -11,7 +12,9 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(255), nullable=False, unique=True)
     hashed_password = db.Column(db.String(255), nullable=False)
 
-    notes = db.relationship("Note", backref="User", cascade="all, delete-orphan")
+    notes = db.relationship("Note", back_populates="user", cascade="all, delete-orphan")
+    shared_notes = db.relationship("Note", secondary=shared_notes, back_populates="shared_users")
+    comments = db.relationship("Comment", back_populates="user")
 
     @property
     def password(self):
@@ -28,6 +31,11 @@ class User(db.Model, UserMixin):
         return {
             'id': self.id,
             'username': self.username,
-            'email': self.email
+            'email': self.email,
+            "shared_notes": {note.id: note.to_dict() for note in self.shared_notes}
         }
-        
+    
+    def safe_dict(self):
+        return {
+            "username": self.username
+        }

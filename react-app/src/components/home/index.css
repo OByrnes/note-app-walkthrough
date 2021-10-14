@@ -1,0 +1,15 @@
+.homepage__container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.homepage__container h2{
+    text-align: center;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-bottom: solid 2px #ED7B2D;
+}
+
+.sharedNote__container{
+    margin-bottom: 30px;
+}
