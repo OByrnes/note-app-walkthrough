@@ -1,0 +1,41 @@
+.comment__container{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: solid 1px rgba(255, 255, 255, 0.459);
+    border-radius: 10px;
+    margin-left: 5px;
+
+}
+
+.comment__container input, .reply__container input{
+    background-color: inherit;
+    outline: none;
+    border: none;
+    color: cornsilk;
+
+}
+.comment__container input:hover, .reply__container input:hover{
+    background-color: white;
+    color: black;
+}
+
+.reply__container{
+    margin-left: 10px;
+    margin-right: -10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.new-comment__container input{
+    background-color: inherit;
+    border:none;
+    outline: none;
+    border-bottom: 1px solid orange;
+    
+}
+.new-comment__container input:hover{
+    background-color: white;
+    color: black;
+
+}

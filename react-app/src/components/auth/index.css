@@ -1,5 +1,6 @@
 .auth-form{
-    margin: auto 0;
+    padding-top: 100px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -14,10 +15,11 @@
     color:orchid;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-family: bold;
-
 }
 .auth-form input{
     background-color: inherit;
+    height: 40px;
+    border: none;
     outline: none;
     border-bottom: solid orchid 2px;
 }

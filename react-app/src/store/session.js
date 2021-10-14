@@ -1,7 +1,10 @@
+import { setSharedNotes } from "./notes";
+
 // constants
 const SET_USER = 'session/SET_USER';
 const REMOVE_USER = 'session/REMOVE_USER';
 const SET_ERRORS = 'session/SET_ERRORS'
+
 
 const setUser = (user) => ({
   type: SET_USER,
@@ -30,6 +33,7 @@ export const authenticate = () => async (dispatch) => {
       dispatch(SetErrors(data.errors))
     }else{
       dispatch(setUser(data));
+      dispatch(setSharedNotes(data.shared_notes))
 
     }
   
@@ -54,6 +58,7 @@ export const login = (email, password) => async (dispatch) => {
       dispatch(SetErrors(data.errors))
     }else{
       dispatch(setUser(data))
+      dispatch(setSharedNotes(data.shared_notes))
       return "good"
     }
   } else {

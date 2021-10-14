@@ -11,6 +11,8 @@ from .api.auth_routes import auth_routes
 
 # import the file that holds the routes
 from .api.note_routes import notes_routes
+from .api.share_routes import share_routes
+from .api.comment_routes import comment_routes
 
 from .seeds import seed_commands
 
@@ -38,6 +40,8 @@ app.register_blueprint(auth_routes, url_prefix='/api/auth')
 # register route blueprint
 
 app.register_blueprint(notes_routes, url_prefix='/api/notes')
+app.register_blueprint(share_routes, url_prefix="/api/share")
+app.register_blueprint(comment_routes, url_prefix="/api/comments")
 db.init_app(app)
 Migrate(app, db)
 
