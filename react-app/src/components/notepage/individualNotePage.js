@@ -76,7 +76,7 @@ const IndividualNotePage = () => {
                 <div className="note-header__container">
                     <input type="text" value={title} placeholder="Title" onChange={(e)=>setTitle(e.target.value)} />
                     <input type="datetime-local"  value={date} onChange={(e)=> setDate(e.target.value)}/>
-                    {note && <UsersList note={note} />}
+                    {(note && id !== "new") && <UsersList note={note} />}
                 </div>
                 <div className="editor-container">
                     {(id === "new" || text) && <Editor defaultValue={text} onChange={(e)=> setText(e())} dark/>}
@@ -86,7 +86,7 @@ const IndividualNotePage = () => {
                 <button onClick={(e)=>saveNote(e)}>Save Changes</button>
             {confirmButton? <button onClick={()=>setConfirmButton(false)}>Delete</button> : <div><h5>Are you sure you want to delete this note?</h5><button onClick={deleteFunction}>Yes</button><button onClick={()=>setConfirmButton(true)}>No</button></div>}
             </div>
-            {(note.comments && Object.values(note.comments).length !== 0) && <button onClick={()=>setViewComments((prev)=>!prev)} >{viewComments? 'Hide Comments' : "View Comments"}</button>}
+            {((note && note.comments) && Object.values(note.comments).length !== 0) && <button onClick={()=>setViewComments((prev)=>!prev)} >{viewComments? 'Hide Comments' : "View Comments"}</button>}
             {viewComments && <div>
                 {Object.values(note.comments).map(comment => (
                     <Comment key={comment.id} comment={comment} note={note}/>
@@ -97,7 +97,7 @@ const IndividualNotePage = () => {
             <div className="shared__container">
                 <h4>Shared with:</h4>
                 <div>
-                {note.shared && note.shared.map( user => (
+                {(note && note.shared) && note.shared.map( user => (
                 <span title="Unshare" key={user} onClick={()=>unshare(user)}>{user}</span>))}
                 </div>
                 </div>

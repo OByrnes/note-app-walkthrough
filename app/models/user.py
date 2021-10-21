@@ -33,6 +33,7 @@ class User(db.Model, UserMixin):
             'username': self.username,
             'email': self.email,
             "shared_notes": {note.id: note.to_dict() for note in self.shared_notes}
+           
         }
     
     def safe_dict(self):

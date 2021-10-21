@@ -10,9 +10,9 @@ from .api.user_routes import user_routes
 from .api.auth_routes import auth_routes
 
 # import the file that holds the routes
-from .api.note_routes import notes_routes
 from .api.share_routes import share_routes
 from .api.comment_routes import comment_routes
+from .api.notes_routes import notes_routes
 
 from .seeds import seed_commands
 

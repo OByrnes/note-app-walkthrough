@@ -7,14 +7,14 @@ class Note(db.Model):
     __tablename__ = 'notes'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = db.Column(db.String(3000), nullable=False)
     text = db.Column(db.String(255), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.now())
 
     user = db.relationship("User", back_populates="notes")
-    shared_users = db.relationship("User", secondary=shared_notes, back_populates="shared_notes", cascade="all, delete")
-    comments = db.relationship("Comment")
+    shared_users = db.relationship("User", secondary=shared_notes, back_populates="shared_notes")
+    comments = db.relationship("Comment", cascade="all, delete")
 
 
     def to_dict(self):

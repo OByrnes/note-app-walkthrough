@@ -25,8 +25,6 @@ const hideDropDown = (e) => {
     e.preventDefault()
     setShowDropDown(false)
     document.removeEventListener('click', hideDropDown)
-
-    
 }
 useEffect(()=>{
     if(showDropDown){

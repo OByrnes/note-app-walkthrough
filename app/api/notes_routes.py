@@ -1,20 +1,28 @@
 from flask import Blueprint, request
-from flask_login import login_required, current_user
-from app.forms import NoteForm
 from app.models import Note, db
+from app.forms import NoteForm
+from flask_login import login_required, current_user
+from app.helpers import validation_errors_to_error_messages
 
 notes_routes = Blueprint('notes', __name__)
 
-def validation_errors_to_error_messages(validation_errors):
-    """
-    Simple function that turns the WTForms validation errors into a simple list
-    """
-    errorMessages = []
-    for field in validation_errors:
-        for error in validation_errors[field]:
-            errorMessages.append(f'{field} : {error}')
-    return errorMessages
 
+@notes_routes.route("/", methods=["GET"])
+@login_required
+def get_notes():
+    user_id = current_user.id
+    user_notes = Note.query.filter(Note.user_id == user_id)
+    return {note.just_id(): note.to_dict() for note in user_notes}
+
+
+
+@notes_routes.route("/<int:note_id>", methods=["GET"])
+@login_required
+def get_one_note(note_id):
+    note = Note.query.get(note_id)
+    if note:
+        return note.to_dict()
+    return {"errors": ["Note does not exist"]}
 
 
 @notes_routes.route('/', methods=["POST"])
@@ -35,7 +43,6 @@ def add_new_note():
         return new_note.to_dict()
 
     return {'errors': validation_errors_to_error_messages(form.errors)}
-    
 
 
 @notes_routes.route('/<int:note_id>', methods=["PATCH"])
@@ -48,27 +55,10 @@ def edit_note(note_id):
         updatedNote.text = form.data['text']
         updatedNote.title = form.data['title']
         updatedNote.date = form.data['date']
+
         db.session.commit()
         return updatedNote.to_dict()
     return {"errors": validation_errors_to_error_messages(form.errors)}
-
-
-@notes_routes.route('/<int:note_id>', methods=["GET"])
-@login_required
-def get_one_note(note_id):
-    note = Note.query.get(note_id)
-    if note:
-        return note.to_dict()
-    return {"errors": ["Note does not exist"]}
-
-
-@notes_routes.route('/', methods=["GET"])
-@login_required
-def get_note():
-    user_id = current_user.id
-    userNotes = Note.query.filter(Note.user_id == user_id)
-    print(userNotes)
-    return {note.just_id(): note.to_dict() for note in userNotes}
 
 @notes_routes.route('/<int:note_id>', methods=["DELETE"])
 @login_required
